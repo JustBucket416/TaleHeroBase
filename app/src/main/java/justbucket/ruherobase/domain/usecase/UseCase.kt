@@ -8,9 +8,10 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class UseCase<out Type, in Params>(private val context: CoroutineContext) where Type : Any {
 
-    companion object {
+    val ILLEGAL_EXCEPTION_MESSAGE = "Params can't be null"
+    /*companion object {
         protected const val ILLEGAL_EXCEPTION_MESSAGE = "Params can't be null"
-    }
+    }*/
 
     protected abstract suspend fun run(params: Params? = null): Type
 

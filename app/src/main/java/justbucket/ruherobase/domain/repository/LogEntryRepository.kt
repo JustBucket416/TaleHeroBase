@@ -2,7 +2,7 @@ package justbucket.ruherobase.domain.repository
 
 import justbucket.ruherobase.domain.model.LogEntry
 
-interface LogRepository {
+interface LogEntryRepository {
 
     suspend fun getLogs(): List<LogEntry>
 

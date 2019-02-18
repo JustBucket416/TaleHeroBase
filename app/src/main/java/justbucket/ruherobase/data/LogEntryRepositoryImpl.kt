@@ -5,10 +5,10 @@ import justbucket.ruherobase.data.mapper.mapAccessLongToDomain
 import justbucket.ruherobase.data.mapper.mapToDomain
 import justbucket.ruherobase.data.model.AccessTypeEntity
 import justbucket.ruherobase.domain.model.LogEntry
-import justbucket.ruherobase.domain.repository.LogRepository
+import justbucket.ruherobase.domain.repository.LogEntryRepository
 import java.util.*
 
-class LogRepositoryImpl(database: HeroDatabase) : LogRepository {
+class LogEntryRepositoryImpl(database: HeroDatabase) : LogEntryRepository {
 
     private val logDao = database.getLogDao()
     private val userDao = database.getUserTypeDao()

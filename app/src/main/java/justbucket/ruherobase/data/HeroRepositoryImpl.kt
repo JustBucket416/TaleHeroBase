@@ -14,7 +14,7 @@ class HeroRepositoryImpl(database: HeroDatabase) : HeroRepository {
     private val occDao = database.getOccupationDao()
     private val descDao = database.getDescriptionDao()
 
-    override suspend fun getAllEntities(): List<Hero> {
+    override suspend fun getAllHeroes(): List<Hero> {
         val heroes = heroDao.getAllheroes()
         return heroes.map {
             val descriptionEntity = descDao.findDescriptionByHeroId(it.heroId!!)
@@ -23,14 +23,14 @@ class HeroRepositoryImpl(database: HeroDatabase) : HeroRepository {
         }
     }
 
-    override suspend fun addEntity(hero: Hero) {
+    override suspend fun addHero(hero: Hero) {
         val heroEntity = HeroEntity(null, hero.name, hero.photoUrl, hero.mentionNumber)
         val heroId = heroDao.insertHero(heroEntity)
         occDao.insertOccupation(HeroOccupationEntity(null, heroId, hero.occupation))
         descDao.insertDescription(HeroDescriptionEntity(null, heroId, hero.description))
     }
 
-    override suspend fun deleteEntity(hero: Hero) {
+    override suspend fun deleteHero(hero: Hero) {
         heroDao.deleteHeroById(hero.id)
     }
 
