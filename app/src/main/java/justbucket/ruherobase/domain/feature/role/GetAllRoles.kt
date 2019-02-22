@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class GetAllRoles(context: CoroutineContext,
                   private val userRepository: RoleRepository)
-    : UseCase<List<Role>, Nothing>(context) {
+    : UseCase<List<Role>, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?): List<Role> {
         return userRepository.getAllRoles()

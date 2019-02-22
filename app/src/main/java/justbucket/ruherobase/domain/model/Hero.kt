@@ -1,5 +1,9 @@
 package justbucket.ruherobase.domain.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Hero(
     val id: Long,
     val name: String,
@@ -7,4 +11,4 @@ data class Hero(
     val description: String,
     val occupation: String,
     val photoUrl: String
-)
+) : Parcelable

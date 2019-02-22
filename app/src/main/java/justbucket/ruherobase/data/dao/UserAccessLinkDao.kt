@@ -15,9 +15,9 @@ interface UserAccessLinkDao {
     @Delete
     suspend fun deleteUserAccessLink(UserAccessLinkEntity: UserAccessLinkEntity)
 
-    @Query("SELECT accessTypeId FROM UserAccessLinkEntity WHERE userTypeId = :id")
+    @Query("SELECT accessTypeId FROM UserAccessLinkEntity WHERE userId = :id")
     suspend fun getAllUserLinks(id: Long): List<Long>
 
-    @Query("DELETE FROM UserAccessLinkEntity WHERE userTypeId = :id")
+    @Query("DELETE FROM UserAccessLinkEntity WHERE userId = :id")
     suspend fun deleteAllUserLinks(id: Long)
 }

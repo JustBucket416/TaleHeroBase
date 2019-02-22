@@ -26,13 +26,13 @@ class LogEntryRepositoryImpl(database: HeroDatabase) : LogEntryRepository {
             val hero = Triple(heroEntity, occupationEntity, descriptionEntity).mapToDomain()
 
             val userAccessTypes = linkDao.getAllUserLinks(it.userId).map { AccessTypeEntity(it, "") }
-            val user = userDao.getUserById(it.userId).mapToDomain(userAccessTypes, null)
+            val user = userDao.getUserById(it.userId).mapToDomain(userAccessTypes.mapToDomain(), null)
             LogEntry(user, Date(it.dateMillis), mapAccessLongToDomain(it.accessTypeId), hero)
         }
     }
 
     override suspend fun clearLogs() {
-
+        logDao.clearLogs()
     }
 
     override suspend fun insertLog(entry: LogEntry) {

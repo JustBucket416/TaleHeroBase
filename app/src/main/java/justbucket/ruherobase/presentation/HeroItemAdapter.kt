@@ -15,7 +15,11 @@ import kotlinx.android.synthetic.main.hero_item_holder.view.*
  */
 class HeroItemAdapter(private val listener: (Hero) -> Unit) : RecyclerView.Adapter<HeroItemAdapter.HeroHolder>() {
 
-    private val items: List<Hero> = ArrayList()
+    private val items = arrayListOf<Hero>()
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeroHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.hero_item_holder, parent, false)
@@ -28,12 +32,24 @@ class HeroItemAdapter(private val listener: (Hero) -> Unit) : RecyclerView.Adapt
         holder.bind(items[position], listener)
     }
 
+    override fun getItemId(position: Int) = items[position].id
+
+    fun updateList(list: List<Hero>) {
+        items.clear()
+        items.addAll(list)
+        notifyDataSetChanged()
+    }
+
+    fun getHeroFromHolder(viewHolder: RecyclerView.ViewHolder): Hero {
+        return items[viewHolder.adapterPosition]
+    }
+
     class HeroHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(hero: Hero, listener: (Hero) -> Unit) {
             Glide.with(itemView.context)
-                    .load(hero.photoUrl)
-                    .into(itemView.heroImage)
+                .load(hero.photoUrl)
+                .into(itemView.heroImage)
             itemView.heroTextName.text = hero.name
             itemView.heroTextOccupation.text = hero.occupation
 

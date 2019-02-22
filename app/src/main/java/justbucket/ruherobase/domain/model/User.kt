@@ -13,6 +13,6 @@ class Admin(id: Long, name: String, roles: List<Role>? = null) : User(id, name, 
 
 class SimpleUser(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.READ))
 
-class SuperUser(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.COPY, AccessType.READ))
+class SuperUser(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.CREATE, AccessType.READ))
 
 class Moderator(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.UPDATE, AccessType.DELETE))

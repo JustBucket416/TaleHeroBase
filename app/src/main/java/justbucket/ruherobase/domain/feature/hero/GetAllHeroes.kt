@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class GetAllHeroes(context: CoroutineContext,
                    private val heroRepository: HeroRepository)
-    : UseCase<List<Hero>, Nothing>(context) {
+    : UseCase<List<Hero>, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?): List<Hero> {
         return heroRepository.getAllHeroes()

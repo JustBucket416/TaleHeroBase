@@ -2,8 +2,10 @@ package justbucket.ruherobase.data.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 
 @Entity(
+    primaryKeys = ["accessId", "roleId"],
     foreignKeys = [
         ForeignKey(
             entity = AccessTypeEntity::class,
@@ -13,8 +15,9 @@ import androidx.room.ForeignKey
         ForeignKey(
             entity = RoleEntity::class,
             parentColumns = ["roleId"],
-            childColumns = ["roledId"]
-        )]
+            childColumns = ["roleId"]
+        )],
+    indices = [Index("accessId"), Index("roleId")]
 )
 data class RoleAccessLinkEntity(
     val accessId: Long,

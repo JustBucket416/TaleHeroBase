@@ -2,14 +2,15 @@ package justbucket.ruherobase.data.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = UserTypeEntity::class,
-            parentColumns = ["userTypeId"],
-            childColumns = ["userTypeId"]
+            entity = UserEntity::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"]
         ),
         ForeignKey(
             entity = AccessTypeEntity::class,
@@ -20,7 +21,8 @@ import androidx.room.PrimaryKey
             entity = HeroEntity::class,
             parentColumns = ["heroId"],
             childColumns = ["heroId"]
-        )]
+        )],
+    indices = [Index("accessTypeId"), Index("userId"), Index("heroId")]
 )
 data class LogEntity(
     @PrimaryKey

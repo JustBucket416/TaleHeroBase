@@ -15,7 +15,7 @@ fun UserEntity.mapToDomain(accessEntities: List<AccessType>, roles: List<Role>?)
     when (accessEntities) {
         EnumSet.allOf(AccessType::class.java) -> Admin(userTypeId, userName, roles)
         EnumSet.of(AccessType.READ) -> SimpleUser(userTypeId, userName, roles)
-        EnumSet.of(AccessType.READ, AccessType.COPY) -> SuperUser(userTypeId, userName, roles)
+        EnumSet.of(AccessType.READ, AccessType.CREATE) -> SuperUser(userTypeId, userName, roles)
         EnumSet.of(AccessType.UPDATE, AccessType.DELETE) -> Moderator(userTypeId, userName, roles)
         else -> throw IllegalArgumentException("unknown set")
     }

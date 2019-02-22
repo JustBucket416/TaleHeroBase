@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class GetAllUsers(context: CoroutineContext,
                   private val userRepository: UserRepository)
-    : UseCase<List<User>, Nothing>(context) {
+    : UseCase<List<User>, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?): List<User> {
         return userRepository.getAllUsers()

@@ -2,6 +2,7 @@ package justbucket.ruherobase.data.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -11,7 +12,8 @@ import androidx.room.PrimaryKey
             parentColumns = ["userTypeId"],
             childColumns = ["userTypeId"],
             onDelete = ForeignKey.NO_ACTION
-        )]
+        )],
+    indices = [Index("userTypeId")]
 )
 data class UserEntity(
     @PrimaryKey

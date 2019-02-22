@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class GetAllLogs(context: CoroutineContext,
                  private val userRepository: LogEntryRepository)
-    : UseCase<List<LogEntry>, Nothing>(context) {
+    : UseCase<List<LogEntry>, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?): List<LogEntry> {
         return userRepository.getLogs()

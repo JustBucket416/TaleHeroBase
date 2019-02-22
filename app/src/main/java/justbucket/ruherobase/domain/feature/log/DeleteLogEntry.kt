@@ -8,9 +8,9 @@ import kotlin.coroutines.CoroutineContext
  * @author Roman Pliskin
  * @since 18.02.2019
  */
-class DeleteLogEntry(context: CoroutineContext,
+class DeleteLogs(context: CoroutineContext,
                      private val userRepository: LogEntryRepository)
-    : UseCase<Unit, Nothing>(context) {
+    : UseCase<Unit, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?) {
         userRepository.clearLogs()
