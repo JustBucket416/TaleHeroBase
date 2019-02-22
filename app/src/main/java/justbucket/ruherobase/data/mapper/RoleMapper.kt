@@ -1,8 +1,10 @@
 package justbucket.ruherobase.data.mapper
 
 import justbucket.ruherobase.data.model.RoleEntity
+import justbucket.ruherobase.domain.model.AccessType
 import justbucket.ruherobase.domain.model.Role
+import java.util.*
 
-fun Role.mapToData() = RoleEntity(id, accessTypes.mapToData())
+fun Role.mapToData() = Pair(RoleEntity(id, roleName), accessTypes.mapToData())
 
-fun RoleEntity.mapToDomain() = Role(roleId, userEntity.mapToDomain(), accessTypeEntities.mapToDomain())
+fun RoleEntity.mapToDomain(entities: List<AccessType>) = Role(roleId, entities as EnumSet<AccessType>, roleName)

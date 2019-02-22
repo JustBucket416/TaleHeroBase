@@ -11,11 +11,11 @@ import java.util.*
 class LogEntryRepositoryImpl(database: HeroDatabase) : LogEntryRepository {
 
     private val logDao = database.getLogDao()
-    private val userDao = database.getUserTypeDao()
+    private val userDao = database.getUserDao()
     private val heroDao = database.getHeroDao()
     private val descDao = database.getDescriptionDao()
     private val occDao = database.getOccupationDao()
-    private val linkDao = database.getLinkDao()
+    private val linkDao = database.getUserAccessLinkDao()
 
     override suspend fun getLogs(): List<LogEntry> {
         val logs = logDao.getAllLogs()
@@ -26,7 +26,7 @@ class LogEntryRepositoryImpl(database: HeroDatabase) : LogEntryRepository {
             val hero = Triple(heroEntity, occupationEntity, descriptionEntity).mapToDomain()
 
             val userAccessTypes = linkDao.getAllUserLinks(it.userId).map { AccessTypeEntity(it, "") }
-            val user = userDao.getUserById(it.userId).mapToDomain(userAccessTypes)
+            val user = userDao.getUserById(it.userId).mapToDomain(userAccessTypes, null)
             LogEntry(user, Date(it.dateMillis), mapAccessLongToDomain(it.accessTypeId), hero)
         }
     }

@@ -4,15 +4,15 @@ import java.util.*
 
 sealed class User(
     val id: Long,
-    var name: String,
-    var role: Role?,
+    val name: String,
+    val roles: List<Role>?,
     val accessTypeSet: EnumSet<AccessType>
 )
 
-class Admin(id: Long, name: String) : User(id, name, null, EnumSet.allOf(AccessType::class.java))
+class Admin(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.allOf(AccessType::class.java))
 
-class SimpleUser(id: Long, name: String) : User(id, name, null, EnumSet.of(AccessType.READ))
+class SimpleUser(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.READ))
 
-class SuperUser(id: Long, name: String) : User(id, name, null, EnumSet.of(AccessType.COPY, AccessType.READ))
+class SuperUser(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.COPY, AccessType.READ))
 
-class Moderator(id: Long, name: String) : User(id, name, null, EnumSet.of(AccessType.UPDATE, AccessType.DELETE))
+class Moderator(id: Long, name: String, roles: List<Role>? = null) : User(id, name, roles, EnumSet.of(AccessType.UPDATE, AccessType.DELETE))

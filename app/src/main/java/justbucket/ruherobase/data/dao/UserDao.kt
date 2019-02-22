@@ -7,7 +7,7 @@ import justbucket.ruherobase.data.model.UserEntity
 interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUser(userEntity: UserEntity)
+    suspend fun insertUser(userEntity: UserEntity): Long
 
     @Update
     suspend fun updateUser(userEntity: UserEntity)

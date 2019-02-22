@@ -10,8 +10,8 @@ import justbucket.ruherobase.data.model.*
 
 @Database(
     entities = [AccessTypeEntity::class, HeroDescriptionEntity::class, HeroEntity::class, HeroOccupationEntity::class,
-        LogEntity::class, RoleEntity::class, UserAccessLinkEntity::class, UserEntity::class, UserTypeEntity::class],
-    version = 1
+        LogEntity::class, RoleAccessLinkEntity::class, RoleEntity::class, UserAccessLinkEntity::class,
+        UserRoleLinkEntity::class, UserEntity::class, UserTypeEntity::class], version = 1
 )
 abstract class HeroDatabase : RoomDatabase() {
 
@@ -25,13 +25,17 @@ abstract class HeroDatabase : RoomDatabase() {
 
     abstract fun getOccupationDao(): OccupationDao
 
+    abstract fun getRoleAccessLinkDao(): RoleAccessLinkDao
+
     abstract fun getRoleDao(): RoleDao
 
     abstract fun getUserDao(): UserDao
 
+    abstract fun getUserRoleLinkDao(): UserRoleLinkDao
+
     abstract fun getUserTypeDao(): UserTypeDao
 
-    abstract fun getLinkDao(): UserAccessLinkDao
+    abstract fun getUserAccessLinkDao(): UserAccessLinkDao
 
     companion object {
         @Volatile

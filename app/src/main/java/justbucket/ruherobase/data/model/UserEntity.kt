@@ -11,19 +11,11 @@ import androidx.room.PrimaryKey
             parentColumns = ["userTypeId"],
             childColumns = ["userTypeId"],
             onDelete = ForeignKey.NO_ACTION
-        ),
-
-        ForeignKey(
-            entity = RoleEntity::class,
-            parentColumns = ["roleId"],
-            childColumns = ["userRoleId"],
-            onDelete = ForeignKey.NO_ACTION
         )]
 )
 data class UserEntity(
     @PrimaryKey
     val userId: Long?,
-    val userRoleId: Long?,
     val userTypeId: Long,
     val userName: String
 )
