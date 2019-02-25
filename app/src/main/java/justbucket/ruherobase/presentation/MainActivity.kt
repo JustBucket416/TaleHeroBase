@@ -1,12 +1,9 @@
 package justbucket.ruherobase.presentation
 
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,16 +17,19 @@ import justbucket.ruherobase.domain.feature.hero.GetAllHeroes
 import justbucket.ruherobase.domain.feature.role.AddRole
 import justbucket.ruherobase.domain.feature.role.DeleteRole
 import justbucket.ruherobase.domain.feature.role.GetAllRoles
-import justbucket.ruherobase.domain.feature.user.AddUser
 import justbucket.ruherobase.domain.feature.user.DeleteUser
 import justbucket.ruherobase.domain.feature.user.GetAllUsers
 import justbucket.ruherobase.domain.model.AccessType
 import justbucket.ruherobase.domain.model.Hero
+import justbucket.ruherobase.domain.model.Role
 import justbucket.ruherobase.domain.model.User
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_hero_dialog.*
+import kotlinx.android.synthetic.main.add_role_dialog.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,8 +42,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var addHero: AddHero
     @Inject
-    lateinit var addUser: AddUser
-    @Inject
     lateinit var deleteHero: DeleteHero
     @Inject
     lateinit var addRole: AddRole
@@ -53,11 +51,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var deleteUser: DeleteUser
 
     companion object {
-        lateinit var user: User
+        var user: User? = null
     }
 
     private val users = mutableListOf<User>()
-    private val adapter = HeroItemAdapter { startActivity(DetailActivity.newIntent(this, it)) }
+    private val adapter = HeroItemAdapter {
+        startActivity(DetailActivity.newIntent(this,
+                it, user?.accessTypeSet?.contains(AccessType.UPDATE) == true
+                || user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true))
+    }
     private val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         override fun onMove(
                 recyclerView: RecyclerView,
@@ -69,6 +71,7 @@ class MainActivity : AppCompatActivity() {
             deleteHero.execute({ getUsers() }, adapter.getHeroFromHolder(viewHolder))
         }
     })
+    private var groupId = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,9 +88,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+        groupId = (if (users.isNotEmpty()) users[users.size - 1].id!! + 1L else 0).toInt()
+        val sub = menu.addSubMenu(0, groupId, Menu.CATEGORY_SECONDARY, "Users")
         users.forEach {
-            menu.add(0, it.id!!.toInt(), Menu.NONE, it.name)
+            sub.add(0, it.id!!.toInt(), Menu.NONE, it.name)
         }
+        val bool = user?.accessTypeSet?.contains(AccessType.DELETE) == true
+                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
+        menu.findItem(R.id.action_delete_role).isEnabled = bool
+        menu.findItem(R.id.action_delete_user).isEnabled = bool
         return true
     }
 
@@ -99,16 +108,34 @@ class MainActivity : AppCompatActivity() {
             R.id.action_add_user -> {
                 val userDialog = AddUserFragment()
                 userDialog.show(supportFragmentManager, "add-user")
-                userDialog.dialog?.setOnDismissListener {
-                    getUsers()
-                    it.dismiss()
-                }
                 true
             }
+            R.id.action_add_role -> {
+                createAddRoleDialog().show()
+                true
+            }
+            R.id.action_delete_role -> {
+                getAllRoles.execute({
+                    if (it.isEmpty()) return@execute
+                    createDeleteRoleDialog(HashMap(it.associate {
+                        Pair(it, false)
+                    })).show()
+                })
+                true
+            }
+            R.id.action_delete_user -> {
+                val userList = ArrayList(users).apply { remove(user) }
+                if (userList.isEmpty()) return true
+                val users = HashMap(userList.associate { Pair(it, false) })
+                createDeleteUserDialog(users).show()
+                true
+            }
+            groupId -> true
             else -> {
                 user = users.filter { it.id!!.toInt() == item.itemId }[0]
                 initFab()
                 setupDelete()
+                invalidateOptionsMenu()
                 true
             }
         }
@@ -120,7 +147,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDelete() {
-        if (user.accessTypeSet.contains(AccessType.DELETE)) {
+        if (user?.accessTypeSet?.contains(AccessType.DELETE) == true
+                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true) {
             helper.attachToRecyclerView(recyclerView)
         } else {
             helper.attachToRecyclerView(null)
@@ -128,7 +156,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFab() {
-        if (user.accessTypeSet.contains(AccessType.CREATE)) {
+        if (user?.accessTypeSet?.contains(AccessType.CREATE) == true
+                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true) {
             fab.visibility = View.VISIBLE
             fab.setOnClickListener {
                 createAddHeroDialog().show()
@@ -138,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getUsers() {
+    fun getUsers() {
         getAllUsers.execute({
             users.clear()
             users.addAll(it)
@@ -156,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                     .setView(R.layout.add_hero_dialog)
                     .setPositiveButton("Add") { dialog, _ ->
-                        val name = (dialog as AlertDialog).editName.text.toString()
+                        val name = (dialog as AlertDialog).editHeroName.text.toString()
                         val number = dialog.editNumber.text.toString()
                         val occupation = dialog.editOccupation.text.toString()
                         val description = dialog.editDescription.text.toString()
@@ -179,10 +208,52 @@ class MainActivity : AppCompatActivity() {
                     }
 
 
-    private fun createInputBox(context: Context, hint: String) =
-            EditText(context).apply {
-                this.hint = hint
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            }
+    private fun createAddRoleDialog(): AlertDialog.Builder =
+            AlertDialog.Builder(this)
+                    .setView(R.layout.add_role_dialog)
+                    .setPositiveButton("Add") { dialog, _ ->
+                        val name = (dialog as AlertDialog).editRoleName.text.toString()
+                        val set = EnumSet.noneOf(AccessType::class.java)
+                        if (dialog.checkCreate.isChecked) set.add(AccessType.CREATE)
+                        if (dialog.checkRead.isChecked) set.add(AccessType.READ)
+                        if (dialog.checkUpdate.isChecked) set.add(AccessType.UPDATE)
+                        if (dialog.checkDelete.isChecked) set.add(AccessType.DELETE)
+                        if (name.isNotBlank()) {
+                            addRole.execute(params = Role(null, set, name))
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+
+    private fun createDeleteRoleDialog(roles: HashMap<Role, Boolean>): AlertDialog.Builder =
+            AlertDialog.Builder(this)
+                    .setMultiChoiceItems(roles.keys.map { it.roleName }.toTypedArray(), null)
+                    { _, which, isChecked ->
+                        roles[roles.keys.toList()[which]] = isChecked
+                    }
+                    .setPositiveButton("Delete") { dialog, _ ->
+                        roles.filter { it.value }.forEach { t, _ -> deleteRole.execute(params = t) }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+
+    private fun createDeleteUserDialog(users: HashMap<User, Boolean>): AlertDialog.Builder =
+            AlertDialog.Builder(this)
+                    .setMultiChoiceItems(users.keys.map { it.name }.toTypedArray(), null)
+                    { _, which, isChecked ->
+                        users[users.keys.toList()[which]] = isChecked
+                    }
+                    .setPositiveButton("Delete") { dialog, _ ->
+                        users.filter { it.value }.forEach { t, u -> deleteUser.execute(params = t) }
+                        getUsers()
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
 
 }

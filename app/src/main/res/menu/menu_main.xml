@@ -1,10 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="justbucket.ruherobase.presentation.MainActivity">
     <item
+        android:id="@+id/action_delete_user"
+        android:enabled="false"
+        android:title="Delete User" />
+    <item
+        android:id="@+id/action_delete_role"
+        android:enabled="false"
+        android:title="Delete Role" />
+    <item
         android:id="@+id/action_add_user"
-        android:orderInCategory="100"
-        android:title="Add user"
-        app:showAsAction="never" />
+        android:title="Add User" />
+    <item
+        android:id="@+id/action_add_role"
+        android:title="Add Role" />
 </menu>

@@ -2,19 +2,20 @@ package justbucket.ruherobase.presentation
 
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.android.support.AndroidSupportInjection
 import justbucket.ruherobase.R
 import justbucket.ruherobase.domain.feature.role.GetAllRoles
 import justbucket.ruherobase.domain.feature.user.AddUser
 import justbucket.ruherobase.domain.model.*
-import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.fragment_add_user.*
 import javax.inject.Inject
 
@@ -39,6 +40,7 @@ class AddUserFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         getAllRoles.execute({
+            roleRecycler.layoutManager = LinearLayoutManager(context)
             roleRecycler.adapter = RoleAdapter(it)
             items = it
         })
@@ -48,10 +50,10 @@ class AddUserFragment : DialogFragment() {
         }
 
         buttonAdd.setOnClickListener {
-            val name = editName.text.toString()
+            val name = editUserName.text.toString()
             if (name.isNotBlank()) {
                 val roles = items.filter {
-                    (recyclerView.findViewHolderForItemId(it.id!!).itemView as CheckBox).isChecked
+                    (roleRecycler.findViewHolderForItemId(it.id!!).itemView as CheckBox).isChecked
                 }
                 val user = when (userGroup.checkedRadioButtonId) {
                     R.id.radioUser -> SimpleUser(null, name, roles)
@@ -64,6 +66,11 @@ class AddUserFragment : DialogFragment() {
             }
             dismiss()
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        (activity as MainActivity).getUsers()
     }
 
     private class RoleAdapter(private val items: List<Role>) : RecyclerView.Adapter<RoleAdapter.RoleHolder>() {

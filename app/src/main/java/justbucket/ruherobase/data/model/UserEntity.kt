@@ -10,10 +10,9 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = UserTypeEntity::class,
             parentColumns = ["userTypeId"],
-            childColumns = ["userTypeId"],
-            onDelete = ForeignKey.NO_ACTION
+            childColumns = ["userTypeId"]
         )],
-    indices = [Index("userTypeId")]
+    indices = [Index("userTypeId"), Index("userName", unique = true)]
 )
 data class UserEntity(
     @PrimaryKey

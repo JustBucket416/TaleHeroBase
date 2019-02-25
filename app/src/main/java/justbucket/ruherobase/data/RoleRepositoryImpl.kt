@@ -16,14 +16,16 @@ class RoleRepositoryImpl @Inject constructor(database: HeroDatabase) : RoleRepos
 
     override suspend fun getAllRoles(): List<Role> {
         return roleDao.getAllRoles()
-                .map { it.mapToDomain(roleLinkDao.getAllRoleLinks(it.roleId!!).map { mapAccessLongToDomain(it) }) }
+                .map {
+                    it.mapToDomain(roleLinkDao.getAllRoleLinks(it.roleId!!).map { mapAccessLongToDomain(it) })
+                }
     }
 
     override suspend fun addRole(role: Role) {
         val (entity, links) = role.mapToData()
         val roleId = roleDao.insertRole(entity)
         links.forEach {
-            roleLinkDao.insertRoleAccessLink(RoleAccessLinkEntity(roleId, it.accessId))
+            roleLinkDao.insertRoleAccessLink(RoleAccessLinkEntity(it.accessId, roleId))
         }
     }
 

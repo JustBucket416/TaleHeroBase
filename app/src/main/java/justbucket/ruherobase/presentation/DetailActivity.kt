@@ -18,16 +18,20 @@ class DetailActivity : AppCompatActivity() {
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+                    .setAction("Action", null).show()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     companion object {
         private const val KEY = "key"
+        private const val EDIT_KEY = "edit-key"
 
-        fun newIntent(context: Context, hero: Hero): Intent =
-            Intent(context, DetailActivity::class.java).apply { putExtra(KEY, hero) }
+        fun newIntent(context: Context, hero: Hero, canEdit: Boolean) =
+                Intent(context, DetailActivity::class.java).apply {
+                    putExtra(KEY, hero)
+                    putExtra(EDIT_KEY, canEdit)
+                }
     }
 
 }

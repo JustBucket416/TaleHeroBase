@@ -7,4 +7,4 @@ import java.util.*
 
 fun Role.mapToData() = Pair(RoleEntity(id, roleName), accessTypes.mapToData())
 
-fun RoleEntity.mapToDomain(entities: List<AccessType>) = Role(roleId, entities as EnumSet<AccessType>, roleName)
+fun RoleEntity.mapToDomain(entities: List<AccessType>) = Role(roleId, EnumSet.copyOf(entities), roleName)

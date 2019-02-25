@@ -5,11 +5,14 @@
               android:layout_height="match_parent">
 
     <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:id="@+id/editName" android:hint="Name" android:singleLine="true" android:selectAllOnFocus="true"/>
+        android:id="@+id/editHeroName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/editRoleName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
+
+    <CheckBox
+        android:id="@+id/checkCreate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create" />
+
+    <CheckBox
+        android:id="@+id/checkRead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read" />
+
+    <CheckBox
+        android:id="@+id/checkUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update" />
+
+    <CheckBox
+        android:id="@+id/checkDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete" />
+
+</LinearLayout>
