@@ -37,11 +37,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-alpha03'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
 
     def room_version = "2.1.0-alpha04"
     def daggerVersion = '2.19'
 
     implementation "androidx.room:room-runtime:$room_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation "androidx.room:room-coroutines:$room_version"

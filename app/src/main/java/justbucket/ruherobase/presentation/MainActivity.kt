@@ -1,13 +1,18 @@
 package justbucket.ruherobase.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.android.AndroidInjection
 import justbucket.ruherobase.R
 import justbucket.ruherobase.domain.feature.hero.AddHero
 import justbucket.ruherobase.domain.feature.hero.DeleteHero
@@ -19,8 +24,10 @@ import justbucket.ruherobase.domain.feature.user.AddUser
 import justbucket.ruherobase.domain.feature.user.DeleteUser
 import justbucket.ruherobase.domain.feature.user.GetAllUsers
 import justbucket.ruherobase.domain.model.AccessType
+import justbucket.ruherobase.domain.model.Hero
 import justbucket.ruherobase.domain.model.User
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.add_hero_dialog.*
 import kotlinx.android.synthetic.main.content_main.*
 import javax.inject.Inject
 
@@ -53,10 +60,10 @@ class MainActivity : AppCompatActivity() {
     private val adapter = HeroItemAdapter { startActivity(DetailActivity.newIntent(this, it)) }
     private val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ) = false
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+        ) = true
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             deleteHero.execute({ getUsers() }, adapter.getHeroFromHolder(viewHolder))
@@ -68,15 +75,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        AndroidInjection.inject(this)
 
         getUsers()
+        initRecycler()
+        getAllHeroes.execute({ adapter.updateList(it) })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         users.forEach {
-            menu.add(0, it.id.toInt(), Menu.NONE, it.name)
+            menu.add(0, it.id!!.toInt(), Menu.NONE, it.name)
         }
         return true
     }
@@ -86,8 +96,21 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_add_user -> true
-            else -> super.onOptionsItemSelected(item)
+            R.id.action_add_user -> {
+                val userDialog = AddUserFragment()
+                userDialog.show(supportFragmentManager, "add-user")
+                userDialog.dialog?.setOnDismissListener {
+                    getUsers()
+                    it.dismiss()
+                }
+                true
+            }
+            else -> {
+                user = users.filter { it.id!!.toInt() == item.itemId }[0]
+                initFab()
+                setupDelete()
+                true
+            }
         }
     }
 
@@ -108,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         if (user.accessTypeSet.contains(AccessType.CREATE)) {
             fab.visibility = View.VISIBLE
             fab.setOnClickListener {
-                //TODO()
+                createAddHeroDialog().show()
             }
         } else {
             fab.visibility = View.GONE
@@ -128,4 +151,38 @@ class MainActivity : AppCompatActivity() {
             adapter.updateList(it)
         })
     }
+
+    private fun createAddHeroDialog(): AlertDialog.Builder =
+            AlertDialog.Builder(this)
+                    .setView(R.layout.add_hero_dialog)
+                    .setPositiveButton("Add") { dialog, _ ->
+                        val name = (dialog as AlertDialog).editName.text.toString()
+                        val number = dialog.editNumber.text.toString()
+                        val occupation = dialog.editOccupation.text.toString()
+                        val description = dialog.editDescription.text.toString()
+                        val url = dialog.editImageUrl.text.toString()
+                        if (name.isNotBlank() &&
+                                number.isNotBlank() &&
+                                occupation.isNotBlank() &&
+                                description.isNotBlank() &&
+                                url.isNotBlank()
+                        ) {
+                            addHero.execute(
+                                    { getHeroes() },
+                                    Hero(-1, name, Integer.parseInt(number), description, occupation, url)
+                            )
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+
+
+    private fun createInputBox(context: Context, hint: String) =
+            EditText(context).apply {
+                this.hint = hint
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            }
+
 }

@@ -7,8 +7,9 @@ import justbucket.ruherobase.data.model.AccessTypeEntity
 import justbucket.ruherobase.domain.model.LogEntry
 import justbucket.ruherobase.domain.repository.LogEntryRepository
 import java.util.*
+import javax.inject.Inject
 
-class LogEntryRepositoryImpl(database: HeroDatabase) : LogEntryRepository {
+class LogEntryRepositoryImpl @Inject constructor(database: HeroDatabase) : LogEntryRepository {
 
     private val logDao = database.getLogDao()
     private val userDao = database.getUserDao()

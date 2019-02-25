@@ -8,7 +8,7 @@ import justbucket.ruherobase.data.model.RoleEntity
 interface RoleDao {
 
     @Insert(onConflict = IGNORE)
-    suspend fun insertRole(rolEntity: RoleEntity)
+    suspend fun insertRole(rolEntity: RoleEntity): Long
 
     @Update
     suspend fun updateRole(roleEntity: RoleEntity)

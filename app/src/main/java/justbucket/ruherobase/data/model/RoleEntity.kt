@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class RoleEntity(
     @PrimaryKey
-    val roleId: Long,
+    val roleId: Long?,
     val roleName: String
 )

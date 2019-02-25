@@ -7,8 +7,9 @@ import justbucket.ruherobase.data.model.HeroEntity
 import justbucket.ruherobase.data.model.HeroOccupationEntity
 import justbucket.ruherobase.domain.model.Hero
 import justbucket.ruherobase.domain.repository.HeroRepository
+import javax.inject.Inject
 
-class HeroRepositoryImpl(database: HeroDatabase) : HeroRepository {
+class HeroRepositoryImpl @Inject constructor(database: HeroDatabase) : HeroRepository {
 
     private val heroDao = database.getHeroDao()
     private val occDao = database.getOccupationDao()
@@ -31,11 +32,11 @@ class HeroRepositoryImpl(database: HeroDatabase) : HeroRepository {
     }
 
     override suspend fun deleteHero(hero: Hero) {
-        heroDao.deleteHeroById(hero.id)
+        heroDao.deleteHeroById(hero.id!!)
     }
 
     override suspend fun updateEntity(hero: Hero) {
-        val occupationEntity = occDao.findOccupationByHeroId(hero.id)
+        val occupationEntity = occDao.findOccupationByHeroId(hero.id!!)
         occupationEntity.occupation = hero.occupation
         occDao.updateOccupation(occupationEntity)
 

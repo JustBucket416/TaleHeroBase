@@ -8,8 +8,9 @@ import justbucket.ruherobase.data.model.UserAccessLinkEntity
 import justbucket.ruherobase.data.model.UserRoleLinkEntity
 import justbucket.ruherobase.domain.model.User
 import justbucket.ruherobase.domain.repository.UserRepository
+import javax.inject.Inject
 
-class UserRepositoryImpl(database: HeroDatabase) : UserRepository {
+class UserRepositoryImpl @Inject constructor(database: HeroDatabase) : UserRepository {
 
     private val userDao = database.getUserDao()
     private val userRoleLinkDao = database.getUserRoleLinkDao()
@@ -19,22 +20,22 @@ class UserRepositoryImpl(database: HeroDatabase) : UserRepository {
 
     override suspend fun getAllUsers(): List<User> {
         return userDao.getAllUsers().map {
-            it.mapToDomain(userAccessTypeDao.getAllUserLinks(it.userId!!).map { mapAccessLongToDomain(it) },
-                userRoleLinkDao.getAllRoleLinks(it.userId).map {
-                    roleDao.getRoleById(it)
-                        .mapToDomain(roleLinkDao.getAllRoleLinks(it).map { mapAccessLongToDomain(it) })
-                })
+            it.mapToDomain(userAccessTypeDao.getAllUserLinks(it.userTypeId).map { mapAccessLongToDomain(it) },
+                    userRoleLinkDao.getAllRoleLinks(it.userId!!).map {
+                        roleDao.getRoleById(it)
+                                .mapToDomain(roleLinkDao.getAllRoleLinks(it).map { mapAccessLongToDomain(it) })
+                    })
         }
     }
 
     override suspend fun addUser(user: User) {
         val (entity, accessTypes, roles) = user.mapToData()
         val id = userDao.insertUser(entity)
-        accessTypes.forEach {
+        /*accessTypes.forEach {
             userAccessTypeDao.insertUserAccessLink(UserAccessLinkEntity(id, it.accessId))
-        }
+        }*/
         roles?.forEach {
-            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(id, it.first.roleId))
+            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(id, it.first.roleId!!))
         }
     }
 
@@ -51,7 +52,7 @@ class UserRepositoryImpl(database: HeroDatabase) : UserRepository {
         }
         userRoleLinkDao.deleteAllRoleLinks(entity.userId)
         roles?.forEach {
-            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(entity.userId, it.first.roleId))
+            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(entity.userId, it.first.roleId!!))
         }
     }
 }

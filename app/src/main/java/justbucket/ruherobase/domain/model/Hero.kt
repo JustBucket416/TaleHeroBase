@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Hero(
-    val id: Long,
+    val id: Long?,
     val name: String,
     val mentionNumber: Int,
     val description: String,

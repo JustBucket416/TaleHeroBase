@@ -6,16 +6,17 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    foreignKeys = [ForeignKey(
-        entity = HeroEntity::class,
-        parentColumns = ["heroId"],
-        childColumns = ["heroId"]
-    )],
-    indices = [Index("heroId")]
+        foreignKeys = [ForeignKey(
+                entity = HeroEntity::class,
+                parentColumns = ["heroId"],
+                childColumns = ["heroId"],
+                onDelete = ForeignKey.CASCADE
+        )],
+        indices = [Index("heroId")]
 )
 data class HeroOccupationEntity(
-    @PrimaryKey
-    val occupationId: Long?,
-    val heroId: Long,
-    var occupation: String
+        @PrimaryKey
+        val occupationId: Long?,
+        val heroId: Long?,
+        var occupation: String
 )

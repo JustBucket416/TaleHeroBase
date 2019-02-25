@@ -32,7 +32,7 @@ class HeroItemAdapter(private val listener: (Hero) -> Unit) : RecyclerView.Adapt
         holder.bind(items[position], listener)
     }
 
-    override fun getItemId(position: Int) = items[position].id
+    override fun getItemId(position: Int) = items[position].id!!
 
     fun updateList(list: List<Hero>) {
         items.clear()
