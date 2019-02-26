@@ -16,5 +16,6 @@ class UpdateHero @Inject constructor (context: CoroutineContext,
 
     override suspend fun run(params: Hero?) {
         if (params == null) throw IllegalArgumentException(ILLEGAL_EXCEPTION_MESSAGE)
+        heroRepository.updateHero(params)
     }
 }

@@ -35,7 +35,7 @@ class HeroRepositoryImpl @Inject constructor(database: HeroDatabase) : HeroRepos
         heroDao.deleteHeroById(hero.id!!)
     }
 
-    override suspend fun updateEntity(hero: Hero) {
+    override suspend fun updateHero(hero: Hero) {
         val occupationEntity = occDao.findOccupationByHeroId(hero.id!!)
         occupationEntity.occupation = hero.occupation
         occDao.updateOccupation(occupationEntity)

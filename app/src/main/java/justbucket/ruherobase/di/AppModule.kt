@@ -20,10 +20,6 @@ abstract class AppModule {
 
         @Provides
         @JvmStatic
-        fun provideGlideManager(context: Context) = Glide.with(context)
-
-        @Provides
-        @JvmStatic
         fun provideCoroutineContext(): kotlin.coroutines.CoroutineContext = Dispatchers.Main
     }
 

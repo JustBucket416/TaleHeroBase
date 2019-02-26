@@ -79,7 +79,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         AndroidInjection.inject(this)
+    }
 
+    override fun onStart() {
+        super.onStart()
         getUsers()
         initRecycler()
         getAllHeroes.execute({ adapter.updateList(it) })
@@ -93,10 +96,15 @@ class MainActivity : AppCompatActivity() {
         users.forEach {
             sub.add(0, it.id!!.toInt(), Menu.NONE, it.name)
         }
-        val bool = user?.accessTypeSet?.contains(AccessType.DELETE) == true
+        val ableToDelete = user?.accessTypeSet?.contains(AccessType.DELETE) == true
                 || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
-        menu.findItem(R.id.action_delete_role).isEnabled = bool
-        menu.findItem(R.id.action_delete_user).isEnabled = bool
+        menu.findItem(R.id.action_delete_role).isEnabled = ableToDelete
+        menu.findItem(R.id.action_delete_user).isEnabled = ableToDelete
+        val ableToCreate = user?.accessTypeSet?.contains(AccessType.CREATE) == true
+                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true
+        menu.findItem(R.id.action_add_role).isEnabled = ableToCreate
+        menu.findItem(R.id.action_add_user).isEnabled = ableToCreate
+
         return true
     }
 
@@ -124,7 +132,10 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_delete_user -> {
-                val userList = ArrayList(users).apply { remove(user) }
+                val userList = ArrayList(users).apply {
+                    remove(user)
+                    filter { it.id != 0L }
+                }
                 if (userList.isEmpty()) return true
                 val users = HashMap(userList.associate { Pair(it, false) })
                 createDeleteUserDialog(users).show()
@@ -148,7 +159,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupDelete() {
         if (user?.accessTypeSet?.contains(AccessType.DELETE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true) {
+                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
+        ) {
             helper.attachToRecyclerView(recyclerView)
         } else {
             helper.attachToRecyclerView(null)
@@ -157,7 +169,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initFab() {
         if (user?.accessTypeSet?.contains(AccessType.CREATE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true) {
+                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true
+        ) {
             fab.visibility = View.VISIBLE
             fab.setOnClickListener {
                 createAddHeroDialog().show()
@@ -171,6 +184,9 @@ class MainActivity : AppCompatActivity() {
         getAllUsers.execute({
             users.clear()
             users.addAll(it)
+            user = users.find { it.id == 0L }
+            initFab()
+            setupDelete()
             invalidateOptionsMenu()
         })
     }
@@ -248,7 +264,7 @@ class MainActivity : AppCompatActivity() {
                         users[users.keys.toList()[which]] = isChecked
                     }
                     .setPositiveButton("Delete") { dialog, _ ->
-                        users.filter { it.value }.forEach { t, u -> deleteUser.execute(params = t) }
+                        users.filter { it.value }.forEach { t, _ -> deleteUser.execute(params = t) }
                         getUsers()
                         dialog.dismiss()
                     }

@@ -49,6 +49,7 @@ abstract class HeroDatabase : RoomDatabase() {
                             db.execSQL("INSERT OR IGNORE INTO AccessTypeEntity VALUES(0, \"create\"), (1, \"read\"), (2, \"update\"), (3, \"delete \") ")
                             db.execSQL("INSERT OR IGNORE INTO UserTypeEntity VALUES(0, \"Admin\"), (1, \"User\"), (2, \"SuperUser\"), (3, \"Moderator\")")
                             db.execSQL("INSERT OR IGNORE INTO UserAccessLinkEntity VALUES(0, 0), (0, 1), (0, 2), (0, 3), (1, 1), (2, 0), (2, 1), (3, 3), (3, 3)")
+                            db.execSQL("INSERT OR IGNORE INTO UserEntity VALUES(0, 0, 'Admin')")
                         }
                     })
                     .build()

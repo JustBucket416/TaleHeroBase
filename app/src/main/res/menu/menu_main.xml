@@ -3,11 +3,9 @@
     tools:context="justbucket.ruherobase.presentation.MainActivity">
     <item
         android:id="@+id/action_delete_user"
-        android:enabled="false"
         android:title="Delete User" />
     <item
         android:id="@+id/action_delete_role"
-        android:enabled="false"
         android:title="Delete Role" />
     <item
         android:id="@+id/action_add_user"

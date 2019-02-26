@@ -10,5 +10,5 @@ interface HeroRepository {
 
     suspend fun deleteHero(hero: Hero)
 
-    suspend fun updateEntity(hero: Hero)
+    suspend fun updateHero(hero: Hero)
 }
