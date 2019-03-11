@@ -46,11 +46,11 @@ class UserRepositoryImpl @Inject constructor(database: HeroDatabase) : UserRepos
     override suspend fun updateUser(user: User) {
         val (entity, accessTypes, roles) = user.mapToData()
         userDao.updateUser(entity)
-        userAccessTypeDao.deleteAllUserLinks(entity.userId!!)
-        accessTypes.forEach {
+        //userAccessTypeDao.deleteAllUserLinks(entity.userId!!)
+        /*accessTypes.forEach {
             userAccessTypeDao.insertUserAccessLink(UserAccessLinkEntity(entity.userId, it.accessId))
-        }
-        userRoleLinkDao.deleteAllRoleLinks(entity.userId)
+        }*/
+        userRoleLinkDao.deleteAllRoleLinks(entity.userId!!)
         roles?.forEach {
             userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(entity.userId, it.first.roleId!!))
         }

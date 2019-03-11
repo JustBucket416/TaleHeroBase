@@ -1,16 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="justbucket.ruherobase.presentation.MainActivity">
     <item
-        android:id="@+id/action_delete_user"
-        android:title="Delete User" />
+        android:id="@+id/action_roles"
+        android:icon="@drawable/ic_account_card_details_outline"
+        android:title="Add Role"
+        app:showAsAction="always" />
     <item
-        android:id="@+id/action_delete_role"
-        android:title="Delete Role" />
-    <item
-        android:id="@+id/action_add_user"
-        android:title="Add User" />
-    <item
-        android:id="@+id/action_add_role"
-        android:title="Add Role" />
+        android:id="@+id/action_users"
+        android:icon="@drawable/ic_account_switch"
+        android:title="Add User"
+        app:showAsAction="always" />
 </menu>

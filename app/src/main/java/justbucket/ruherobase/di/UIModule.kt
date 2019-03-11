@@ -2,10 +2,7 @@ package justbucket.ruherobase.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import justbucket.ruherobase.presentation.AddUserFragment
-import justbucket.ruherobase.presentation.DetailActivity
-import justbucket.ruherobase.presentation.LogActivity
-import justbucket.ruherobase.presentation.MainActivity
+import justbucket.ruherobase.presentation.*
 
 /**
  * @author Roman Pliskin
@@ -22,6 +19,9 @@ abstract class UIModule {
 
     @ContributesAndroidInjector
     abstract fun bindLogActivity(): LogActivity
+
+    @ContributesAndroidInjector
+    abstract fun bindChooseUserActivity(): ChooseUserActivity
 
     @ContributesAndroidInjector
     abstract fun bindAddUseeFragment(): AddUserFragment

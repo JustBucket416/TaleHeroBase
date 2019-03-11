@@ -13,9 +13,9 @@ fun User.mapToData() = when (this) {
 
 fun UserEntity.mapToDomain(accessEntities: List<AccessType>, roles: List<Role>?) =
     when (accessEntities) {
-        EnumSet.allOf(AccessType::class.java).toList() -> Admin(userTypeId, userName, roles)
-        EnumSet.of(AccessType.READ).toList() -> SimpleUser(userTypeId, userName, roles)
-        EnumSet.of(AccessType.READ, AccessType.CREATE).toList() -> SuperUser(userTypeId, userName, roles)
-        EnumSet.of(AccessType.UPDATE, AccessType.DELETE).toList() -> Moderator(userTypeId, userName, roles)
+        EnumSet.allOf(AccessType::class.java).toList() -> Admin(userId, userName, roles)
+        EnumSet.of(AccessType.READ).toList() -> SimpleUser(userId, userName, roles)
+        EnumSet.of(AccessType.READ, AccessType.CREATE).toList() -> SuperUser(userId, userName, roles)
+        EnumSet.of(AccessType.UPDATE, AccessType.DELETE).toList() -> Moderator(userId, userName, roles)
         else -> throw IllegalArgumentException("unknown set")
     }

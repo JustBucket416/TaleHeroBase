@@ -68,8 +68,8 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
-        if (MainActivity.user?.accessTypeSet?.contains(AccessType.UPDATE) == true
-                || MainActivity.user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true
+        if (ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.UPDATE) == true
+                || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true
         ) {
             imageDetail.setOnClickListener {
                 createInputDialogBox((EditText(this))).show()

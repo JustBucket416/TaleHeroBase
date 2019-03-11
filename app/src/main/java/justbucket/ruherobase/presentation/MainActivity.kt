@@ -23,6 +23,7 @@ import justbucket.ruherobase.domain.model.AccessType
 import justbucket.ruherobase.domain.model.Hero
 import justbucket.ruherobase.domain.model.Role
 import justbucket.ruherobase.domain.model.User
+import justbucket.ruherobase.presentation.ChooseUserActivity.Companion.user
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_hero_dialog.*
 import kotlinx.android.synthetic.main.add_role_dialog.*
@@ -36,8 +37,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var getAllRoles: GetAllRoles
     @Inject
-    lateinit var getAllUsers: GetAllUsers
-    @Inject
     lateinit var getAllHeroes: GetAllHeroes
     @Inject
     lateinit var addHero: AddHero
@@ -47,18 +46,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var addRole: AddRole
     @Inject
     lateinit var deleteRole: DeleteRole
-    @Inject
-    lateinit var deleteUser: DeleteUser
 
-    companion object {
-        var user: User? = null
-    }
-
-    private val users = mutableListOf<User>()
     private val adapter = HeroItemAdapter {
         startActivity(DetailActivity.newIntent(this,
-                it, user?.accessTypeSet?.contains(AccessType.UPDATE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true))
+                it, ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.UPDATE) == true
+                || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true))
     }
     private val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         override fun onMove(
@@ -68,10 +60,9 @@ class MainActivity : AppCompatActivity() {
         ) = true
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            deleteHero.execute({ getUsers() }, adapter.getHeroFromHolder(viewHolder))
+            deleteHero.execute(params = adapter.getHeroFromHolder(viewHolder))
         }
     })
-    private var groupId = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,28 +74,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        getUsers()
         initRecycler()
+        setupDelete()
+        initFab()
         getAllHeroes.execute({ adapter.updateList(it) })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
-        groupId = (if (users.isNotEmpty()) users[users.size - 1].id!! + 1L else 0).toInt()
-        val sub = menu.addSubMenu(0, groupId, Menu.CATEGORY_SECONDARY, "Users")
-        users.forEach {
-            sub.add(0, it.id!!.toInt(), Menu.NONE, it.name)
-        }
-        val ableToDelete = user?.accessTypeSet?.contains(AccessType.DELETE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
-        menu.findItem(R.id.action_delete_role).isEnabled = ableToDelete
-        menu.findItem(R.id.action_delete_user).isEnabled = ableToDelete
-        val ableToCreate = user?.accessTypeSet?.contains(AccessType.CREATE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true
-        menu.findItem(R.id.action_add_role).isEnabled = ableToCreate
-        menu.findItem(R.id.action_add_user).isEnabled = ableToCreate
-
         return true
     }
 
@@ -112,44 +90,10 @@ class MainActivity : AppCompatActivity() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_add_user -> {
-                val userDialog = AddUserFragment()
-                userDialog.show(supportFragmentManager, "add-user")
-                true
-            }
-            R.id.action_add_role -> {
-                createAddRoleDialog().show()
-                true
-            }
-            R.id.action_delete_role -> {
-                getAllRoles.execute({
-                    if (it.isEmpty()) return@execute
-                    createDeleteRoleDialog(HashMap(it.associate {
-                        Pair(it, false)
-                    })).show()
-                })
-                true
-            }
-            R.id.action_delete_user -> {
-                val userList = ArrayList(users).apply {
-                    remove(user)
-                    filter { it.id != 0L }
-                }
-                if (userList.isEmpty()) return true
-                val users = HashMap(userList.associate { Pair(it, false) })
-                createDeleteUserDialog(users).show()
-                true
-            }
-            groupId -> true
-            else -> {
-                user = users.filter { it.id!!.toInt() == item.itemId }[0]
-                initFab()
-                setupDelete()
-                invalidateOptionsMenu()
-                true
-            }
+        when (item.itemId) {
+            R.id.action_users -> startActivity(ChooseUserActivity.newIntent(this))
         }
+        return true
     }
 
     private fun initRecycler() {
@@ -158,8 +102,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDelete() {
-        if (user?.accessTypeSet?.contains(AccessType.DELETE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
+        if (ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.DELETE) == true
+                || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
         ) {
             helper.attachToRecyclerView(recyclerView)
         } else {
@@ -178,17 +122,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             fab.visibility = View.GONE
         }
-    }
-
-    fun getUsers() {
-        getAllUsers.execute({
-            users.clear()
-            users.addAll(it)
-            user = users.find { it.id == 0L }
-            initFab()
-            setupDelete()
-            invalidateOptionsMenu()
-        })
     }
 
     private fun getHeroes() {
@@ -251,21 +184,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     .setPositiveButton("Delete") { dialog, _ ->
                         roles.filter { it.value }.forEach { t, _ -> deleteRole.execute(params = t) }
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("Cancel") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-
-    private fun createDeleteUserDialog(users: HashMap<User, Boolean>): AlertDialog.Builder =
-            AlertDialog.Builder(this)
-                    .setMultiChoiceItems(users.keys.map { it.name }.toTypedArray(), null)
-                    { _, which, isChecked ->
-                        users[users.keys.toList()[which]] = isChecked
-                    }
-                    .setPositiveButton("Delete") { dialog, _ ->
-                        users.filter { it.value }.forEach { t, _ -> deleteUser.execute(params = t) }
-                        getUsers()
                         dialog.dismiss()
                     }
                     .setNegativeButton("Cancel") { dialog, _ ->

@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
     indices = [Index("userTypeId"), Index("userName", unique = true)]
 )
 data class UserEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val userId: Long?,
     val userTypeId: Long,
     val userName: String
