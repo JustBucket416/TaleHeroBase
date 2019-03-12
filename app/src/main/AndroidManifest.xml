@@ -13,6 +13,15 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".presentation.RoleActivity"
+                android:label="@string/title_activity_role"
+                android:parentActivityName=".presentation.MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="justbucket.ruherobase.presentation.MainActivity"/>
+        </activity>
+        <activity
                 android:name=".presentation.ChooseUserActivity"
                 android:label="@string/title_activity_choose_user"
                 android:parentActivityName=".presentation.MainActivity"

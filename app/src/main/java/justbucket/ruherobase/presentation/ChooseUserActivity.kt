@@ -40,6 +40,7 @@ class ChooseUserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_user)
         setSupportActionBar(toolbar)
+        title = "Choose user"
 
         fab.setOnClickListener {
             val fragment = AddUserFragment.newInstance(null, null, null)

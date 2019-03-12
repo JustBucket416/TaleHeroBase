@@ -34,7 +34,7 @@ class RoleRepositoryImpl @Inject constructor(database: HeroDatabase) : RoleRepos
         roleDao.updateRole(entity)
         roleLinkDao.deleteAllRoleLinks(entity.roleId!!)
         links.forEach {
-            roleLinkDao.insertRoleAccessLink(RoleAccessLinkEntity(entity.roleId, it.accessId))
+            roleLinkDao.insertRoleAccessLink(RoleAccessLinkEntity(it.accessId, entity.roleId))
         }
     }
 

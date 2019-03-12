@@ -24,5 +24,8 @@ abstract class UIModule {
     abstract fun bindChooseUserActivity(): ChooseUserActivity
 
     @ContributesAndroidInjector
+    abstract fun bindRoleActivity(): RoleActivity
+
+    @ContributesAndroidInjector
     abstract fun bindAddUseeFragment(): AddUserFragment
 }
