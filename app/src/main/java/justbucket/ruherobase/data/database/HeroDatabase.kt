@@ -11,7 +11,7 @@ import justbucket.ruherobase.data.model.*
 @Database(
     entities = [AccessTypeEntity::class, HeroDescriptionEntity::class, HeroEntity::class, HeroOccupationEntity::class,
         LogEntity::class, RoleAccessLinkEntity::class, RoleEntity::class, UserAccessLinkEntity::class,
-        UserRoleLinkEntity::class, UserEntity::class, UserTypeEntity::class], version = 1, exportSchema = false
+        UserRoleLinkEntity::class, UserEntity::class, UserTypeEntity::class], version = 1, exportSchema = true
 )
 abstract class HeroDatabase : RoomDatabase() {
 
@@ -54,6 +54,11 @@ abstract class HeroDatabase : RoomDatabase() {
                     })
                     .build()
             }
+
+        fun close(context: Context) {
+            getDatabase(context).close()
+            INSTANCE = null
+        }
 
     }
 }

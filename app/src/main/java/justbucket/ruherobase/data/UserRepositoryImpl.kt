@@ -4,7 +4,6 @@ import justbucket.ruherobase.data.database.HeroDatabase
 import justbucket.ruherobase.data.mapper.mapAccessLongToDomain
 import justbucket.ruherobase.data.mapper.mapToData
 import justbucket.ruherobase.data.mapper.mapToDomain
-import justbucket.ruherobase.data.model.UserAccessLinkEntity
 import justbucket.ruherobase.data.model.UserRoleLinkEntity
 import justbucket.ruherobase.domain.model.User
 import justbucket.ruherobase.domain.repository.UserRepository
@@ -19,11 +18,11 @@ class UserRepositoryImpl @Inject constructor(database: HeroDatabase) : UserRepos
     private val roleLinkDao = database.getRoleAccessLinkDao()
 
     override suspend fun getAllUsers(): List<User> {
-        return userDao.getAllUsers().map {
-            it.mapToDomain(userAccessTypeDao.getAllUserLinks(it.userTypeId).map { mapAccessLongToDomain(it) },
-                    userRoleLinkDao.getAllRoleLinks(it.userId!!).map {
-                        roleDao.getRoleById(it)
-                                .mapToDomain(roleLinkDao.getAllRoleLinks(it).map { mapAccessLongToDomain(it) })
+        return userDao.getAllUsers().map { userEntity ->
+            userEntity.mapToDomain(userAccessTypeDao.getAllUserLinks(userEntity.userId!!).map { mapAccessLongToDomain(it) },
+                    userRoleLinkDao.getAllRoleLinks(userEntity.userId).map { roleId ->
+                        roleDao.getRoleById(roleId)
+                                .mapToDomain(roleLinkDao.getAllRoleLinks(roleId).map { mapAccessLongToDomain(it) })
                     })
         }
     }
@@ -32,10 +31,10 @@ class UserRepositoryImpl @Inject constructor(database: HeroDatabase) : UserRepos
         val (entity, accessTypes, roles) = user.mapToData()
         val id = userDao.insertUser(entity)
         /*accessTypes.forEach {
-            userAccessTypeDao.insertUserAccessLink(UserAccessLinkEntity(id, it.accessId))
+            userAccessTypeDao.insertUserRoleLink(UserAccessLinkEntity(id, it.accessId))
         }*/
         roles?.forEach {
-            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(id, it.first.roleId!!))
+            userRoleLinkDao.insertUserRoleLink(UserRoleLinkEntity(id, it.first.roleId!!))
         }
     }
 
@@ -48,11 +47,11 @@ class UserRepositoryImpl @Inject constructor(database: HeroDatabase) : UserRepos
         userDao.updateUser(entity)
         //userAccessTypeDao.deleteAllUserLinks(entity.userId!!)
         /*accessTypes.forEach {
-            userAccessTypeDao.insertUserAccessLink(UserAccessLinkEntity(entity.userId, it.accessId))
+            userAccessTypeDao.insertUserRoleLink(UserAccessLinkEntity(entity.userId, it.accessId))
         }*/
         userRoleLinkDao.deleteAllRoleLinks(entity.userId!!)
         roles?.forEach {
-            userRoleLinkDao.insertUserAccessLink(UserRoleLinkEntity(entity.userId, it.first.roleId!!))
+            userRoleLinkDao.insertUserRoleLink(UserRoleLinkEntity(entity.userId, it.first.roleId!!))
         }
     }
 }

@@ -14,4 +14,9 @@
         app:showAsAction="always" />
     <item android:title="Show logs" android:id="@+id/action_logs" android:icon="@drawable/ic_format_list_bulleted"
           app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_backup"
+        android:icon="@drawable/ic_backup_restore"
+        android:title="Backup and restore"
+        app:showAsAction="ifRoom" />
 </menu>

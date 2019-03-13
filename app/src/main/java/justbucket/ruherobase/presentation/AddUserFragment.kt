@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.CheckBox
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,10 +45,10 @@ class AddUserFragment : DialogFragment() {
         private const val ID_KEY = "Idkey"
 
         fun newInstance(
-            name: String? = null,
-            accessTypes: EnumSet<AccessType>? = null,
-            roles: ArrayList<Role>? = null,
-            id: Long = -1
+                name: String? = null,
+                accessTypes: EnumSet<AccessType>? = null,
+                roles: ArrayList<Role>? = null,
+                id: Long = -1
         ) = AddUserFragment().apply {
             if (name == null) return@apply
             arguments = Bundle().apply {
@@ -80,9 +81,14 @@ class AddUserFragment : DialogFragment() {
             roleRecycler.layoutManager = LinearLayoutManager(context)
             roleRecycler.adapter = RoleAdapter(it)
             items = it
-            roles?.forEach {
-                (roleRecycler.findViewHolderForItemId(it.id!!).itemView as CheckBox).isChecked = true
-            }
+            roleRecycler.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    roles?.forEach {
+                        (roleRecycler.findViewHolderForItemId(it.id!!).itemView as CheckBox).isChecked = true
+                    }
+                    roleRecycler.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            })
         })
 
         editUserName.setText(name)

@@ -7,15 +7,15 @@ import justbucket.ruherobase.data.model.UserRoleLinkEntity
 interface UserRoleLinkDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUserAccessLink(userRoleLinkEntity: UserRoleLinkEntity): Long
+    suspend fun insertUserRoleLink(userRoleLinkEntity: UserRoleLinkEntity): Long
 
     @Update
-    suspend fun updateUserAccessLink(userRoleLinkEntity: UserRoleLinkEntity)
+    suspend fun updateUserRoleLink(userRoleLinkEntity: UserRoleLinkEntity)
 
     @Delete
-    suspend fun deleteUserAccessLink(userRoleLinkEntity: UserRoleLinkEntity)
+    suspend fun deleteUserRoleLink(userRoleLinkEntity: UserRoleLinkEntity)
 
-    @Query("SELECT roleId FROM UserRoleLinkEntity WHERE roleId = :id")
+    @Query("SELECT roleId FROM UserRoleLinkEntity WHERE userId = :id")
     suspend fun getAllRoleLinks(id: Long): List<Long>
 
     @Query("DELETE FROM UserRoleLinkEntity WHERE roleId = :id")

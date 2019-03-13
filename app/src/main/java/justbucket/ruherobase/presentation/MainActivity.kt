@@ -1,6 +1,10 @@
 package justbucket.ruherobase.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.android.AndroidInjection
 import justbucket.ruherobase.R
+import justbucket.ruherobase.data.database.HeroDatabase
 import justbucket.ruherobase.domain.feature.hero.AddHero
 import justbucket.ruherobase.domain.feature.hero.DeleteHero
 import justbucket.ruherobase.domain.feature.hero.GetAllHeroes
@@ -20,7 +25,10 @@ import justbucket.ruherobase.presentation.ChooseUserActivity.Companion.user
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_hero_dialog.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.apache.commons.io.FileUtils
+import java.io.File
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -84,8 +92,76 @@ class MainActivity : AppCompatActivity() {
             R.id.action_users -> startActivity(ChooseUserActivity.newIntent(this))
             R.id.action_roles -> startActivity(RoleActivity.newIntent(this))
             R.id.action_logs -> startActivity(LogActivity.newIntent(this))
+            R.id.action_backup -> checkPermissions()
         }
         return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            showBackupDialog()
+        }
+    }
+
+    private fun checkPermissions() {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        } else {
+            showBackupDialog()
+        }
+    }
+
+    private fun showBackupDialog() {
+        AlertDialog.Builder(this)
+                .setTitle("Choose action")
+                .setPositiveButton("Backup") { dialog, _ ->
+                    backupDB()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Restore") { dialog, _ ->
+                    loadDB()
+                    dialog.dismiss()
+                }
+                .show()
+    }
+
+    private fun backupDB() {
+        HeroDatabase.close(this)
+        val db = getDatabasePath("heroes.db")
+        val dbShm = File(db.parent, "heroes.db-shm")
+        val dbWal = File(db.parent, "heroes.db-wal")
+
+        val db2 = File(Environment.getExternalStorageDirectory(), "heroes.db")
+        val dbShm2 = File(db2.parent, "heroes.db-shm")
+        val dbWal2 = File(db2.parent, "heroes.db-wal")
+
+        try {
+            FileUtils.copyFile(db, db2)
+            FileUtils.copyFile(dbShm, dbShm2)
+            FileUtils.copyFile(dbWal, dbWal2)
+        } catch (e: Exception) {
+            Log.e("SAVEDB", e.toString())
+        }
+    }
+
+    private fun loadDB() {
+        HeroDatabase.close(this)
+        val db = File(Environment.getExternalStorageDirectory(), "heroes.db")
+        val dbShm = File(db.parent, "heroes.db-shm")
+        val dbWal = File(db.parent, "heroes.db-wal")
+
+        val db2 = getDatabasePath("heroes.db")
+        val dbShm2 = File(db2.parent, "heroes.db-shm")
+        val dbWal2 = File(db2.parent, "heroes.db-wal")
+
+        try {
+            FileUtils.copyFile(db, db2)
+            FileUtils.copyFile(dbShm, dbShm2)
+            FileUtils.copyFile(dbWal, dbWal2)
+        } catch (e: Exception) {
+            Log.e("RESTOREDB", e.toString())
+        }
+
     }
 
     private fun initRecycler() {
