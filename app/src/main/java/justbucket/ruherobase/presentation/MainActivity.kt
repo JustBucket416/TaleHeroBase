@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         setupDelete()
         initFab()
         //ChooseUserActivity.user = Admin(0, "Admin", emptyList())
-        getAllHeroes.execute({ adapter.updateList(it) })
+        getHeroes()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
