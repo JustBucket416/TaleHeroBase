@@ -16,7 +16,7 @@ interface LogDao {
     @Delete
     suspend fun deleteLog(logEntity: LogEntity)
 
-    @Query("SELECT * FROM LogEntity")
+    @Query("SELECT * FROM LogEntity ORDER BY dateMillis ASC")
     suspend fun getAllLogs(): List<LogEntity>
 
     @Query("DELETE FROM LogEntity")

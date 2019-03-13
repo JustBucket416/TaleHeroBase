@@ -56,14 +56,16 @@ class DetailActivity : AppCompatActivity() {
                     && photoUrl.isNotBlank()
             ) {
                 updateHero.execute(
-                        params = Hero(
+                    params = UpdateHero.Params.createParams(
+                        Hero(
                                 hero.id,
                                 name,
                                 Integer.parseInt(number),
                                 description,
                                 occupation,
                                 photoUrl
-                        )
+                        ), ChooseUserActivity.user?.id!!
+                    )
                 )
             }
         }

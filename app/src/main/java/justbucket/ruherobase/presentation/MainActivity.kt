@@ -33,18 +33,23 @@ class MainActivity : AppCompatActivity() {
 
     private val adapter = HeroItemAdapter {
         startActivity(DetailActivity.newIntent(this,
-                it, ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.UPDATE) == true
-                || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true))
+            it, ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.UPDATE) == true
+                    || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.UPDATE) } == true))
     }
     private val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
         ) = true
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            deleteHero.execute(params = adapter.getHeroFromHolder(viewHolder))
+            deleteHero.execute(
+                params = DeleteHero.Params.createParams(
+                    adapter.getHeroFromHolder(viewHolder),
+                    ChooseUserActivity.user?.id!!
+                )
+            )
         }
     })
 
@@ -61,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         initRecycler()
         setupDelete()
         initFab()
+        //ChooseUserActivity.user = Admin(0, "Admin", emptyList())
         getAllHeroes.execute({ adapter.updateList(it) })
     }
 
@@ -77,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_users -> startActivity(ChooseUserActivity.newIntent(this))
             R.id.action_roles -> startActivity(RoleActivity.newIntent(this))
+            R.id.action_logs -> startActivity(LogActivity.newIntent(this))
         }
         return true
     }
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupDelete() {
         if (ChooseUserActivity.user?.accessTypeSet?.contains(AccessType.DELETE) == true
-                || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
+            || ChooseUserActivity.user?.roles?.any { it.accessTypes.contains(AccessType.DELETE) } == true
         ) {
             helper.attachToRecyclerView(recyclerView)
         } else {
@@ -98,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initFab() {
         if (user?.accessTypeSet?.contains(AccessType.CREATE) == true
-                || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true
+            || user?.roles?.any { it.accessTypes.contains(AccessType.CREATE) } == true
         ) {
             fab.visibility = View.VISIBLE
             fab.setOnClickListener {
@@ -116,29 +123,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createAddHeroDialog(): AlertDialog.Builder =
-            AlertDialog.Builder(this)
-                    .setView(R.layout.add_hero_dialog)
-                    .setPositiveButton("Add") { dialog, _ ->
-                        val name = (dialog as AlertDialog).editHeroName.text.toString()
-                        val number = dialog.editNumber.text.toString()
-                        val occupation = dialog.editOccupation.text.toString()
-                        val description = dialog.editDescription.text.toString()
-                        val url = dialog.editImageUrl.text.toString()
-                        if (name.isNotBlank() &&
-                                number.isNotBlank() &&
-                                occupation.isNotBlank() &&
-                                description.isNotBlank() &&
-                                url.isNotBlank()
-                        ) {
-                            addHero.execute(
-                                    { getHeroes() },
-                                    Hero(-1, name, Integer.parseInt(number), description, occupation, url)
-                            )
-                        }
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("Cancel") { dialog, _ ->
-                        dialog.dismiss()
-                    }
+        AlertDialog.Builder(this)
+            .setView(R.layout.add_hero_dialog)
+            .setPositiveButton("Add") { dialog, _ ->
+                val name = (dialog as AlertDialog).editHeroName.text.toString()
+                val number = dialog.editNumber.text.toString()
+                val occupation = dialog.editOccupation.text.toString()
+                val description = dialog.editDescription.text.toString()
+                val url = dialog.editImageUrl.text.toString()
+                if (name.isNotBlank() &&
+                    number.isNotBlank() &&
+                    occupation.isNotBlank() &&
+                    description.isNotBlank() &&
+                    url.isNotBlank()
+                ) {
+                    addHero.execute(
+                        { getHeroes() },
+                        AddHero.Params.createParams(
+                            Hero(
+                                -1,
+                                name,
+                                Integer.parseInt(number),
+                                description,
+                                occupation,
+                                url
+                            ), ChooseUserActivity.user?.id!!
+                        )
+                    )
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
 
 }

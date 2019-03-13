@@ -6,5 +6,5 @@ data class LogEntry(
     val user: User,
     val date: Date,
     val accessType: AccessType,
-    val hero: Hero
+    val heroName: String
 )

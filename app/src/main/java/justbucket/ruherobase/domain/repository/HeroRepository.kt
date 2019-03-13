@@ -6,9 +6,9 @@ interface HeroRepository {
 
     suspend fun getAllHeroes(): List<Hero>
 
-    suspend fun addHero(hero: Hero)
+    suspend fun addHero(hero: Hero, userId: Long)
 
-    suspend fun deleteHero(hero: Hero)
+    suspend fun deleteHero(hero: Hero, userId: Long)
 
-    suspend fun updateHero(hero: Hero)
+    suspend fun updateHero(hero: Hero, userId: Long)
 }

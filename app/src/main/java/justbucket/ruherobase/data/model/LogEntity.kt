@@ -16,19 +16,14 @@ import androidx.room.PrimaryKey
             entity = AccessTypeEntity::class,
             parentColumns = ["accessId"],
             childColumns = ["accessTypeId"]
-        ),
-        ForeignKey(
-            entity = HeroEntity::class,
-            parentColumns = ["heroId"],
-            childColumns = ["heroId"]
         )],
-    indices = [Index("accessTypeId"), Index("userId"), Index("heroId")]
+    indices = [Index("accessTypeId"), Index("userId")]
 )
 data class LogEntity(
     @PrimaryKey
-    val logId: Long,
+    val logId: Long?,
     val userId: Long,
     val dateMillis: Long,
     val accessTypeId: Long,
-    val heroId: Long
+    val heroName: String
 )

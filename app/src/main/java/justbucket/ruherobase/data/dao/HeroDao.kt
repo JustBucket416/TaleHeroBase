@@ -17,7 +17,7 @@ interface HeroDao {
     suspend fun deleteHero(heroEntity: HeroEntity)
 
     @Query("SELECT * FROM HeroEntity")
-    suspend fun getAllheroes(): List<HeroEntity>
+    suspend fun getAllHeroes(): List<HeroEntity>
 
     @Query("DELETE FROM HeroEntity WHERE heroId = :id")
     suspend fun deleteHeroById(id: Long)

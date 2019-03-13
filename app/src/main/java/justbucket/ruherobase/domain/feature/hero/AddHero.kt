@@ -11,11 +11,17 @@ import kotlin.coroutines.CoroutineContext
  * @since 18.02.2019
  */
 class AddHero @Inject constructor (context: CoroutineContext,
-                                   private val heroRepository: HeroRepository)
-    : UseCase<Unit, Hero>(context) {
+                                   private val heroRepository: HeroRepository) :
+    UseCase<Unit, AddHero.Params>(context) {
 
-    override suspend fun run(params: Hero?) {
+    override suspend fun run(params: Params?) {
         if (params == null) throw IllegalArgumentException(ILLEGAL_EXCEPTION_MESSAGE)
-        heroRepository.addHero(params)
+        heroRepository.addHero(params.hero, params.userId)
+    }
+
+    data class Params internal constructor(val hero: Hero, val userId: Long) {
+        companion object {
+            fun createParams(hero: Hero, userId: Long) = Params(hero, userId)
+        }
     }
 }

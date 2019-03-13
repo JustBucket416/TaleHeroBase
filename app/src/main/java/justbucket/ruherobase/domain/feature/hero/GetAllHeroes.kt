@@ -10,9 +10,10 @@ import kotlin.coroutines.CoroutineContext
  * @author Roman Pliskin
  * @since 18.02.2019
  */
-class GetAllHeroes @Inject constructor (context: CoroutineContext,
-                                        private val heroRepository: HeroRepository)
-    : UseCase<List<Hero>, Nothing?>(context) {
+class GetAllHeroes @Inject constructor(
+    context: CoroutineContext,
+    private val heroRepository: HeroRepository
+) : UseCase<List<Hero>, Nothing?>(context) {
 
     override suspend fun run(params: Nothing?): List<Hero> {
         return heroRepository.getAllHeroes()
